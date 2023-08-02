@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "IndStoreBot": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

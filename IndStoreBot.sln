@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndStoreBot", "IndStoreBot\IndStoreBot.csproj", "{ADFE5837-7A1A-4FBC-BB40-702589196CFF}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{7F375F7D-FA17-4C90-A6EF-97B1D119B3F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{ADFE5837-7A1A-4FBC-BB40-702589196CFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADFE5837-7A1A-4FBC-BB40-702589196CFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADFE5837-7A1A-4FBC-BB40-702589196CFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F375F7D-FA17-4C90-A6EF-97B1D119B3F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F375F7D-FA17-4C90-A6EF-97B1D119B3F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F375F7D-FA17-4C90-A6EF-97B1D119B3F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F375F7D-FA17-4C90-A6EF-97B1D119B3F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

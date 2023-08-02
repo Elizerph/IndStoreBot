@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  indstorebot:
+    environment:
+      - telegrambottoken=${telegrambottoken}
+    image: ${DOCKER_REGISTRY-}indstorebot
+    build:
+      context: .
+      dockerfile: IndStoreBot/Dockerfile
