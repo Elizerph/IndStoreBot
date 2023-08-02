@@ -22,10 +22,6 @@ namespace IndStoreBot
             var updateHandler = new UpdateHandler();
             var bot = updateHandler.BuildAdapter(SupportedMessenger.Telegram, token);
             await bot.Init();
-            //await bot.SetCommands(new Dictionary<string, string>
-            //{
-
-            //});
             var cts = new CancellationTokenSource();
             Console.CancelKeyPress += (_, _) =>
             {
