@@ -126,7 +126,8 @@ namespace IndStoreBot
                                                         "\t/localization: provides localization file",
                                                         "Admin file uploads:",
                                                         "\tsettings.json: setup settings",
-                                                        "\tlocalization: setup localization file"
+                                                        "\tlocalization: setup localization file",
+                                                        "\t\tlocalization emoji featue: use <emo{id}>, where {id} is emoji unicode code"
                                                     };
                                                     await _client.SendTextMessageAsync(messageChat.Id, string.Join(Environment.NewLine, helpTextLines));
                                                     break;
@@ -221,7 +222,8 @@ namespace IndStoreBot
 
         private async Task<string> Localize(string id)
         {
-            return await _localization.Load(e => e.GetOrDefault(id));
+            var result = await _localization.Load(e => e.GetOrDefault(id));
+            return result.InsertEmo();
         }
 
         private async Task HandleException(ITelegramBotClient client, Exception exception, CancellationToken cancellationToken)

@@ -1,7 +1,6 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
-using System.Linq;
 
 namespace IndStoreBot
 {
@@ -11,12 +10,12 @@ namespace IndStoreBot
         private readonly ChatId _userchat;
         private readonly ISingletonStorage<SettingsBundle> _settingsProvider;
         private readonly ISingletonStorage<Dictionary<string, string>> _localization;
-        private readonly Dictionary<string, string> _ticketValues = new();
+        private readonly Dictionary<string, string> _values = new();
         private UserContextState _state;
         private int _currentFieldMessageId;
         private Contact _userContact;
-        private LinkedList<TicketFieldTemplate> _ticketFields;
-        private LinkedListNode<TicketFieldTemplate> _currentFieldNode;
+        private LinkedList<TicketAttribute> _attributes;
+        private LinkedListNode<TicketAttribute> _currentAttributeNode;
 
         public UserContext(TelegramBotClient client, ChatId userChat, ISingletonStorage<SettingsBundle> settingsStorage, ISingletonStorage<Dictionary<string, string>> localization)
         {
@@ -65,9 +64,9 @@ namespace IndStoreBot
             switch (_state)
             {
                 case UserContextState.FillTicketFields:
-                    _ticketValues[await Localize(_currentFieldNode.Value.FieldId)] = text;
-                    _currentFieldNode = _currentFieldNode.Next;
-                    await ProcessNode(_currentFieldNode);
+                    _values[await Localize(_currentAttributeNode.Value.NameId)] = text;
+                    _currentAttributeNode = _currentAttributeNode.Next;
+                    await ProcessNode(_currentAttributeNode);
                     break;
                 default:
                     break;
@@ -81,20 +80,20 @@ namespace IndStoreBot
             switch (_state)
             {
                 case UserContextState.FillTicketFields:
-                    _ticketValues[await Localize(_currentFieldNode.Value.FieldId)] = await Localize(data);
-                    var selectedOption = _currentFieldNode.Value.Buttons?.FirstOrDefault(e => e.TextId == data);
-                    var selectedLabel = await Localize(selectedOption?.TextId);
-                    var subTemplate = selectedOption?.Template;
-                    if (subTemplate != null)
+                    _values[await Localize(_currentAttributeNode.Value.NameId)] = await Localize(data);
+                    var selectedOption = _currentAttributeNode.Value.Options?.FirstOrDefault(e => e.ValueId == data);
+                    var selectedLabel = await Localize(selectedOption?.LabelId);
+                    var subAttribute = selectedOption?.Attribute;
+                    if (subAttribute != null)
                     {
-                        var subTemplateNode = new LinkedListNode<TicketFieldTemplate>(subTemplate);
-                        _currentFieldNode = _ticketFields.AddAfter(_currentFieldNode, subTemplate);
+                        var subTemplateNode = new LinkedListNode<TicketAttribute>(subAttribute);
+                        _currentAttributeNode = _attributes.AddAfter(_currentAttributeNode, subAttribute);
                     }
                     else
                     {
-                        _currentFieldNode = _currentFieldNode.Next;
+                        _currentAttributeNode = _currentAttributeNode.Next;
                     }
-                    await ProcessNode(_currentFieldNode);
+                    await ProcessNode(_currentAttributeNode);
                     return selectedLabel;
                 default:
                     return null;
@@ -105,13 +104,13 @@ namespace IndStoreBot
         {
             _state = UserContextState.FillTicketFields;
             var settings = await _settingsProvider.Load();
-            _ticketFields = new(settings.Templates);
-            _ticketValues.Clear();
-            _currentFieldNode = _ticketFields.First;
-            await ProcessNode(_currentFieldNode);
+            _attributes = new(settings.Attributes);
+            _values.Clear();
+            _currentAttributeNode = _attributes.First;
+            await ProcessNode(_currentAttributeNode);
         }
 
-        private async Task ProcessNode(LinkedListNode<TicketFieldTemplate> node)
+        private async Task ProcessNode(LinkedListNode<TicketAttribute> node)
         {
             if (node == null)
             {
@@ -121,7 +120,7 @@ namespace IndStoreBot
                 {
                     $"Заявка от {string.Join(' ', new[] { _userContact.FirstName, _userContact.LastName, _userContact.PhoneNumber })}"
                 };
-                requestLines.AddRange(_ticketValues.Select(p => $"{p.Key}: {p.Value}"));
+                requestLines.AddRange(_values.Select(p => $"{p.Key}: {p.Value}"));
                 var settings = await _settingsProvider.Load();
                 if (settings.TargetChatId != 0L)
                 {
@@ -133,17 +132,17 @@ namespace IndStoreBot
             {
                 var template = node.Value;
                 IReplyMarkup? replyMarkup;
-                if (template.Buttons != null)
+                if (template.Options != null)
                 {
                     replyMarkup = new InlineKeyboardMarkup(
-                        await Task.WhenAll(template.Buttons.Select(async e => 
+                        await Task.WhenAll(template.Options.Select(async e => 
                         {
-                            var localized = await Localize(e.TextId);
+                            var localized = await Localize(e.LabelId);
                             return new[]
                             {
                                 new InlineKeyboardButton(localized)
                                 {
-                                    CallbackData = e.TextId
+                                    CallbackData = e.ValueId
                                 }
                             };
                         }))
@@ -153,14 +152,15 @@ namespace IndStoreBot
                 {
                     replyMarkup = null;
                 }
-                var sent = await _client.SendTextMessageAsync(_userchat, await Localize(template.TextId), replyMarkup: replyMarkup);
+                var sent = await _client.SendTextMessageAsync(_userchat, await Localize(template.MessageId), replyMarkup: replyMarkup);
                 _currentFieldMessageId = sent.MessageId;
             }
         }
 
         private async Task<string> Localize(string id)
         {
-            return await _localization.Load(e => e.GetOrDefault(id));
+            var result = await _localization.Load(e => e.GetOrDefault(id));
+            return result.InsertEmo();
         }
     }
 }

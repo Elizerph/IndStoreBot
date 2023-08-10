@@ -1,94 +1,106 @@
 {
 	"TargetChatId": -1001937474458,
-	"Templates": [
+	"Attributes": [
 		{
-			"TextId": "size_text",
-			"FieldId": "size_field",
-			"Buttons": [
+			"NameId": "size",
+			"MessageId": "size_message",
+			"Options": [
 				{
-					"TextId": "size_xs_button",
-					"Template": null
+					"LabelId": "size_xs_label",
+					"ValueId": "size_xs_value",
+					"Attribute": null
 				},
 				{
-					"TextId": "size_s_button",
-					"Template": null
+					"LabelId": "size_s_label",
+					"ValueId": "size_s_value",
+					"Attribute": null
 				},
 				{
-					"TextId": "size_m_button",
-					"Template": null
+					"LabelId": "size_m_label",
+					"ValueId": "size_m_value",
+					"Attribute": null
 				},
 				{
-					"TextId": "size_l_button",
-					"Template": null
+					"LabelId": "size_l_label",
+					"ValueId": "size_l_value",
+					"Attribute": null
 				},
 				{
-					"TextId": "size_xl_button",
-					"Template": null
+					"LabelId": "size_xl_label",
+					"ValueId": "size_xl_value",
+					"Attribute": null
 				}
 			]
 		},
 		{
-			"TextId": "color_text",
-			"FieldId": "color_field",
-			"Buttons": [
+			"NameId": "color",
+			"MessageId": "color_message",
+			"Options": [
 				{
-					"TextId": "color_black_button",
-					"Template": null
+					"LabelId": "color_black_label",
+					"ValueId": "color_black_value",
+					"Attribute": null
 				},
 				{
-					"TextId": "color_white_button",
-					"Template": null
+					"LabelId": "color_white_label",
+					"ValueId": "color_white_value",
+					"Attribute": null
 				}
 			]
 		},
 		{
-			"TextId": "content_type_text",
-			"FieldId": "content_type_field",
-			"Buttons": [
+			"NameId": "content_type",
+			"MessageId": "content_type_message",
+			"Options": [
 				{
-					"TextId": "content_type_logo_button",
-					"Template": {
-						"TextId": "content_type_logo_text",
-						"FieldId": "content_type_logo_field",
-						"Buttons": null
+					"LabelId": "content_type_logo_label",
+					"ValueId": "content_type_logo_value",
+					"Attribute": {
+						"NameId": "content_type_logo",
+						"MessageId": "content_type_logo_message",
+						"Options": null
 					}
 				},
 				{
-					"TextId": "content_type_label_button",
-					"Template": {
-						"TextId": "content_type_label_text",
-						"FieldId": "content_type_label_field",
-						"Buttons": null
+					"LabelId": "content_type_label_label",
+					"ValueId": "content_type_label_value",
+					"Attribute": {
+						"NameId": "content_type_label",
+						"MessageId": "content_type_label_message",
+						"Options": null
 					}
 				},
 				{
-					"TextId": "content_type_design_button",
-					"Template": {
-						"TextId": "content_type_design_text",
-						"FieldId": "content_type_design_field",
-						"Buttons": null
+					"LabelId": "content_type_design_label",
+					"ValueId": "content_type_design_value",
+					"Attribute": {
+						"NameId": "content_type_design",
+						"MessageId": "content_type_design_message",
+						"Options": null
 					}
 				}
 			]
 		},
 		{
-			"TextId": "content_size_text",
-			"FieldId": "content_size_field",
-			"Buttons": [
+			"NameId": "content_size",
+			"MessageId": "content_size_message",
+			"Options": [
 				{
-					"TextId": "content_size_20_20_button",
-					"Template": null
+					"LabelId": "content_size_20_20_label",
+					"ValueId": "content_size_20_20_value",
+					"Attribute": null
 				},
 				{
-					"TextId": "content_size_18_20_button",
-					"Template": null
+					"LabelId": "content_size_18_20_label",
+					"ValueId": "content_size_18_20_value",
+					"Attribute": null
 				}
 			]
 		},
 		{
-			"TextId": "comment_text",
-			"FieldId": "comment_field",
-			"Buttons": null
+			"NameId": "comment",
+			"MessageId": "comment_message",
+			"Options": null
 		}
 	]
 }
