@@ -50,7 +50,6 @@ namespace IndStoreBot
             {
                 case UserContextState.AwaitContact:
                     _userContact = contact;
-                    Log.WriteInfo($"Contact acquired: {string.Join('\t', new[] { contact.FirstName, contact.LastName, contact.PhoneNumber })}");
                     await StartProcess();
                     break;
                 default:
