@@ -13,24 +13,26 @@ namespace IndStoreBot
         private readonly long _admin;
         private readonly Dictionary<(long, long), UserContext> _contexts = new();
         private TelegramBotClient _client;
-        private readonly SettingsBundleProvider _settingsProvider;
+        private readonly ISingletonStorage<SettingsBundle> _settingsStorage;
+        private readonly ISingletonStorage<Dictionary<string, string>> _localization;
 
-        public BotLauncher(string token, long admin, SettingsBundleProvider settingsProvider)
+        public BotLauncher(string token, long admin, ISingletonStorage<SettingsBundle> settingsProvider, ISingletonStorage<Dictionary<string, string>> localization)
         {
             _token = token ?? throw new ArgumentNullException(nameof(token));
             _admin = admin;
-            _settingsProvider = settingsProvider ?? throw new ArgumentNullException(nameof(settingsProvider));
+            _settingsStorage = settingsProvider ?? throw new ArgumentNullException(nameof(settingsProvider));
+            _localization = localization ?? throw new ArgumentNullException(nameof(localization));
         }
 
         public async Task Start(CancellationToken cancellationToken = default)
         {
             _client = new TelegramBotClient(_token);
-            await _client.SetMyCommandsAsync(new [] 
-            { 
-                new BotCommand 
-                { 
+            await _client.SetMyCommandsAsync(new[]
+            {
+                new BotCommand
+                {
                     Command = "start",
-                    Description = "Заказать футболку"
+                    Description = await Localize("command_start_description")
                 }
             }, null, null, cancellationToken);
             await _client.ReceiveAsync(HandleUpdate, HandleException, null, cancellationToken);
@@ -55,64 +57,121 @@ namespace IndStoreBot
                             switch (message.Chat.Type)
                             {
                                 case ChatType.Private:
-                                    if (user.Id == _admin && message.Document != null)
+                                    if (user.Id == _admin)
                                     {
-                                        using var memoryStream = new MemoryStream();
-                                        await _client.GetInfoAndDownloadFileAsync(message.Document.FileId, memoryStream);
-                                        memoryStream.Position = 0;
-                                        using var reader = new StreamReader(memoryStream);
-                                        var text = await reader.ReadToEndAsync();
-                                        try
+                                        if (message.Document != null)
                                         {
-                                            var newSettings = JsonConvert.DeserializeObject<SettingsBundle>(text);
-                                            await _settingsProvider.SaveAndApply(newSettings);
-                                            await _client.SendTextMessageAsync(messageChat.Id, "Новые настройки применены");
+                                            using var memoryStream = new MemoryStream();
+                                            await _client.GetInfoAndDownloadFileAsync(message.Document.FileId, memoryStream);
+                                            memoryStream.Position = 0;
+                                            using var reader = new StreamReader(memoryStream);
+                                            var text = await reader.ReadToEndAsync();
+                                            try
+                                            {
+                                                switch (message.Document.FileName.ToLower())
+                                                {
+                                                    case "settings.json":
+                                                        var newSettings = JsonConvert.DeserializeObject<SettingsBundle>(text);
+                                                        await _settingsStorage.Save(newSettings);
+                                                        await _client.SendTextMessageAsync(messageChat.Id, await Localize("settings_upload_success"));
+                                                        break;
+                                                    case "localization.json":
+                                                        var newLocalization = JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
+                                                        await _localization.Save(newLocalization);
+                                                        await _client.SendTextMessageAsync(messageChat.Id, await Localize("localization_upload_success"));
+                                                        break;
+                                                    default:
+                                                        await _client.SendTextMessageAsync(messageChat.Id, await Localize("file_upload_failed"));
+                                                        break;
+                                                }
+                                            }
+                                            catch (JsonException)
+                                            {
+                                                await _client.SendTextMessageAsync(messageChat.Id, await Localize("file_upload_failed"));
+                                            }
                                         }
-                                        catch (JsonException)
+                                        else if (!string.IsNullOrEmpty(message.Text))
                                         {
-                                            await _client.SendTextMessageAsync(messageChat.Id, "Настройки не распознаны");
+                                            switch (message.Text.ToLower())
+                                            {
+                                                case "/settings":
+                                                    var settings = await _settingsStorage.Load();
+                                                    var settingsText = JsonConvert.SerializeObject(settings);
+                                                    using (var stream = new MemoryStream())
+                                                    {
+                                                        using var writer = new StreamWriter(stream);
+                                                        await writer.WriteAllTextAsync(settingsText);
+                                                        await writer.FlushAsync();
+                                                        stream.Position = 0;
+                                                        await _client.SendDocumentAsync(messageChat.Id, InputFile.FromStream(stream, "settings.json"));
+                                                    }
+                                                    break;
+                                                case "/localization":
+                                                    var localization = await _localization.Load();
+                                                    var localizationText = JsonConvert.SerializeObject(localization);
+                                                    using (var stream = new MemoryStream())
+                                                    {
+                                                        using var writer = new StreamWriter(stream);
+                                                        await writer.WriteAllTextAsync(localizationText);
+                                                        await writer.FlushAsync();
+                                                        stream.Position = 0;
+                                                        await _client.SendDocumentAsync(messageChat.Id, InputFile.FromStream(stream, "localization.json"));
+                                                    }
+                                                    break;
+                                                case "/help":
+                                                    var helpTextLines = new[]
+                                                    {
+                                                        "Admin commands:",
+                                                        "\t/settings: provides settings file",
+                                                        "\t/localization: provides localization file",
+                                                        "Admin file uploads:",
+                                                        "\tsettings.json: setup settings",
+                                                        "\tlocalization: setup localization file"
+                                                    };
+                                                    await _client.SendTextMessageAsync(messageChat.Id, string.Join(Environment.NewLine, helpTextLines));
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
                                         }
+                                    }
+                                    if (!_contexts.TryGetValue((messageChat.Id, user.Id), out var context))
+                                    {
+                                        context = new(_client, messageChat.Id, _settingsStorage, _localization);
+                                        _contexts[(messageChat.Id, user.Id)] = context;
+                                    }
+                                    var contact = message.Contact;
+                                    if (contact != null)
+                                    {
+                                        await _client.SendTextMessageAsync(messageChat.Id, await Localize("user_contact_confirmed"), replyMarkup: new ReplyKeyboardRemove());
+                                        await context.Contact(contact);
                                     }
                                     else
                                     {
-                                        if (!_contexts.TryGetValue((messageChat.Id, user.Id), out var context))
+                                        var entities = message.Entities;
+                                        if (entities?.SingleOrDefault()?.Type == MessageEntityType.BotCommand)
                                         {
-                                            context = new(_client, messageChat.Id, _settingsProvider);
-                                            _contexts[(messageChat.Id, user.Id)] = context;
-                                        }
-                                        var contact = message.Contact;
-                                        if (contact != null)
-                                        {
-                                            await _client.SendTextMessageAsync(messageChat.Id, "Контакт подтвержден", replyMarkup: new ReplyKeyboardRemove());
-                                            await context.Contact(contact);
-                                        }
-                                        else
-                                        {
-                                            var entities = message.Entities;
-                                            if (entities?.SingleOrDefault()?.Type == MessageEntityType.BotCommand)
+                                            var messageText = message.Text;
+                                            if (string.IsNullOrEmpty(messageText))
                                             {
-                                                var messageText = message.Text;
-                                                if (string.IsNullOrEmpty(messageText))
-                                                {
-                                                    Log.WriteError("Command with empty text ingored");
-                                                }
-                                                else
-                                                {
-                                                    switch (messageText.ToLower())
-                                                    {
-                                                        case "/start":
-                                                            await context.Start();
-                                                            break;
-                                                        default:
-                                                            Log.WriteInfo($"Command ignored: {messageText}");
-                                                            break;
-                                                    }
-                                                }
+                                                Log.WriteError("Command with empty text ingored");
                                             }
                                             else
                                             {
-                                                await context.Text(message.Text);
+                                                switch (messageText.ToLower())
+                                                {
+                                                    case "/start":
+                                                        await context.Start();
+                                                        break;
+                                                    default:
+                                                        Log.WriteInfo($"Command ignored: {messageText}");
+                                                        break;
+                                                }
                                             }
+                                        }
+                                        else
+                                        {
+                                            await context.Text(message.Text);
                                         }
                                     }
                                     break;
@@ -138,7 +197,7 @@ namespace IndStoreBot
                             var queryUser = query.From;
                             if (!_contexts.TryGetValue((queryMessageChat.Id, queryUser.Id), out var context))
                             {
-                                context = new(_client, queryMessage.Chat.Id, _settingsProvider);
+                                context = new(_client, queryMessage.Chat.Id, _settingsStorage, _localization);
                                 _contexts[(queryMessageChat.Id, queryUser.Id)] = context;
                             }
                             var selectedLabel = await context.Button(query.Data, queryMessage.MessageId);
@@ -158,6 +217,11 @@ namespace IndStoreBot
                     Log.WriteInfo($"Update type unhadled: {update.Type}");
                     break;
             }
+        }
+
+        private async Task<string> Localize(string id)
+        {
+            return await _localization.Load(e => e.GetOrDefault(id));
         }
 
         private async Task HandleException(ITelegramBotClient client, Exception exception, CancellationToken cancellationToken)

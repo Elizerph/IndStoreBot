@@ -2,8 +2,7 @@
 {
     public class TicketFieldOption
     {
-        public string Id { get; set; }
-        public string Label { get; set; }
-        public TicketFieldTemplate FieldTemplate { get; set; }
+        public string TextId { get; set; }
+        public TicketFieldTemplate Template { get; set; }
     }
 }

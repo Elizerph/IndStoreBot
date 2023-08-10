@@ -1,106 +1,94 @@
 {
 	"TargetChatId": -1001937474458,
-	"TicketFields": [
+	"Templates": [
 		{
-			"Id": "Размер футболки",
-			"MessageText": "Размер футболки",
-			"Options": [
+			"TextId": "size_text",
+			"FieldId": "size_field",
+			"Buttons": [
 				{
-					"Id": "XS",
-					"Label": "XS",
-					"FieldTemplate": null
+					"TextId": "size_xs_button",
+					"Template": null
 				},
 				{
-					"Id": "S",
-					"Label": "S",
-					"FieldTemplate": null
+					"TextId": "size_s_button",
+					"Template": null
 				},
 				{
-					"Id": "M",
-					"Label": "M",
-					"FieldTemplate": null
+					"TextId": "size_m_button",
+					"Template": null
 				},
 				{
-					"Id": "L",
-					"Label": "L",
-					"FieldTemplate": null
+					"TextId": "size_l_button",
+					"Template": null
 				},
 				{
-					"Id": "XL",
-					"Label": "XL",
-					"FieldTemplate": null
+					"TextId": "size_xl_button",
+					"Template": null
 				}
 			]
 		},
 		{
-			"Id": "Цвет футболки",
-			"MessageText": "Цвет футболки",
-			"Options": [
+			"TextId": "color_text",
+			"FieldId": "color_field",
+			"Buttons": [
 				{
-					"Id": "Черная",
-					"Label": "Черная",
-					"FieldTemplate": null
+					"TextId": "color_black_button",
+					"Template": null
 				},
 				{
-					"Id": "Белая",
-					"Label": "Белая",
-					"FieldTemplate": null
+					"TextId": "color_white_button",
+					"Template": null
 				}
 			]
 		},
 		{
-			"Id": "На футболке будет",
-			"MessageText": "На футболке будет",
-			"Options": [
+			"TextId": "content_type_text",
+			"FieldId": "content_type_field",
+			"Buttons": [
 				{
-					"Id": "Логотип свой",
-					"Label": "Логотип свой",
-					"FieldTemplate": {
-						"Id": "Логотип свой",
-						"MessageText": "Пришлите сюда ссылку на изображение, которое вы бы хотели, чтобы мы нанесли. Предварительно фотографию нужно загрузить на любое облако и открыть доступ",
-						"Options": null
+					"TextId": "content_type_logo_button",
+					"Template": {
+						"TextId": "content_type_logo_text",
+						"FieldId": "content_type_logo_field",
+						"Buttons": null
 					}
 				},
 				{
-					"Id": "Надпись своя",
-					"Label": "Надпись своя",
-					"FieldTemplate": {
-						"Id": "Надпись своя",
-						"MessageText": "Напишите - что нужно написать на вашей футболке\r\n\r\n*\r\n*Мы не сможем сделать слишком маленькие буквы размером до 10мм\r\n** Мы ограничены в выборе шрифтов на русском языке",
-						"Options": null
+					"TextId": "content_type_label_button",
+					"Template": {
+						"TextId": "content_type_label_text",
+						"FieldId": "content_type_label_field",
+						"Buttons": null
 					}
 				},
 				{
-					"Id": "Дизайн наш",
-					"Label": "Дизайн наш",
-					"FieldTemplate": {
-						"Id": "Дизайн наш",
-						"MessageText": "Ведет на наш магазин ВК\r\nВыберите необходимый товар, нажмите на три точки , нажмите скопировать ссылку и пришлите её сюда\r\n\r\nhttps://vk.com/market-215370609?screen=group\r\n\r\n\r\n\r\n",
-						"Options": null
+					"TextId": "content_type_design_button",
+					"Template": {
+						"TextId": "content_type_design_text",
+						"FieldId": "content_type_design_field",
+						"Buttons": null
 					}
 				}
 			]
 		},
 		{
-			"Id": "Размер вышивки (трафареты прилагаются с примерами)",
-			"MessageText": "Размер вышивки (трафареты прилагаются с примерами)",
-			"Options": [
+			"TextId": "content_size_text",
+			"FieldId": "content_size_field",
+			"Buttons": [
 				{
-					"Id": "20*20",
-					"Label": "20*20",
-					"FieldTemplate": null
+					"TextId": "content_size_20_20_button",
+					"Template": null
 				},
 				{
-					"Id": "18*20",
-					"Label": "18*20",
-					"FieldTemplate": null
+					"TextId": "content_size_18_20_button",
+					"Template": null
 				}
 			]
 		},
 		{
-			"Id": "Дополнительная информация ( если нужно)",
-			"MessageText": "Дополнительная информация ( если нужно)",
-			"Options": null
+			"TextId": "comment_text",
+			"FieldId": "comment_field",
+			"Buttons": null
 		}
 	]
 }

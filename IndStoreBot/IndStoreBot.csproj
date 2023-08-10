@@ -10,10 +10,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Data\localization.json" />
 	  <None Remove="settings.json" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Include="Data\localization.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Data\settings.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
@@ -21,8 +25,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="log4net" Version="2.0.15" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 		<PackageReference Include="Telegram.Bot" Version="19.0.0" />
 	</ItemGroup>
 

@@ -2,8 +2,8 @@
 {
     public class TicketFieldTemplate
     {
-        public string Id { get; set; }
-        public string MessageText { get; set; }
-        public IReadOnlyCollection<TicketFieldOption> Options { get; set; }
+        public string TextId { get; set; }
+        public string FieldId { get; set; }
+        public IReadOnlyCollection<TicketFieldOption> Buttons { get; set; }
     }
 }
