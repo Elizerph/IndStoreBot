@@ -8,7 +8,7 @@ namespace IndStoreBot
     {
         private const string AdminVariableName = "telegrambotadmin";
         private const string TokenVariableName = "telegrambottoken";
-        private const string SettingsFilePath = "settings.json";
+        private const string SettingsFilePath = "Data/settings.json";
 
         static async Task Main(string[] args)
         {

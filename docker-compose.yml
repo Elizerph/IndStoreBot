@@ -1,10 +1,16 @@
 version: '3.4'
 
+volumes:
+  data:
+    name: indstorebot-data
 services:
   indstorebot:
     environment:
       - telegrambottoken=${telegrambottoken}
+      - telegrambotadmin=${telegrambotadmin}
     image: ${DOCKER_REGISTRY-}indstorebot
     build:
       context: .
       dockerfile: IndStoreBot/Dockerfile
+    volumes:
+      - data:/app/Data
