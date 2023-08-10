@@ -1,4 +1,4 @@
-﻿using ElizerBot;
+﻿using Newtonsoft.Json;
 
 using System.Reflection;
 
@@ -6,7 +6,9 @@ namespace IndStoreBot
 {
     internal class Program
     {
+        private const string AdminVariableName = "telegrambotadmin";
         private const string TokenVariableName = "telegrambottoken";
+        private const string SettingsFilePath = "settings.json";
 
         static async Task Main(string[] args)
         {
@@ -19,9 +21,19 @@ namespace IndStoreBot
                 Log.WriteError("Token not found");
                 return;
             }
-            var updateHandler = new UpdateHandler();
-            var bot = updateHandler.BuildAdapter(SupportedMessenger.Telegram, token);
-            await bot.Init();
+            var admin = Environment.GetEnvironmentVariable(AdminVariableName);
+            if (string.IsNullOrEmpty(admin))
+            {
+                Log.WriteError("Admin is not specified");
+                return;
+            }
+            if (!long.TryParse(admin, out var adminKey))
+            {
+                Log.WriteError("Admin key is not recognized");
+                return;
+            }
+            var settingsBundleProvider = new SettingsBundleProvider(SettingsFilePath);
+            var bot = new BotLauncher(token, adminKey, settingsBundleProvider);
             var cts = new CancellationTokenSource();
             Console.CancelKeyPress += (_, _) =>
             {
@@ -29,6 +41,7 @@ namespace IndStoreBot
             };
 
             Log.WriteInfo("Bot started. Press ^C to stop");
+            await bot.Start(cts.Token);
             await Task.Delay(-1, cts.Token);
         }
     }
