@@ -1,4 +1,9 @@
 ﻿using IndStoreBot.Access;
+using IndStoreBot.Extensions;
+
+using Newtonsoft.Json;
+
+using System.Text.Json.Nodes;
 
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -8,13 +13,15 @@ namespace IndStoreBot.Handlers
     public class AdminHandler : BaseHandler
     {
         private readonly long _adminId;
-        private readonly Dictionary<string, IReadWriteAccess<Stream>> _confugurationAccesses;
+        private readonly IReadWriteAccess<SettingsBundle> _settingsAccess;
+        private readonly IReadWriteAccess<Dictionary<string, string>> _localizationAccess;
         private readonly IReadWriteSetAccess<Stream> _customFilesAccess;
 
-        public AdminHandler(long adminId, Dictionary<string, IReadWriteAccess<Stream>> confugurationAccesses, IReadWriteSetAccess<Stream> customFilesAccess)
+        public AdminHandler(long adminId, IReadWriteAccess<SettingsBundle> settingsAccess, IReadWriteAccess<Dictionary<string, string>> localizationAccess, IReadWriteSetAccess<Stream> customFilesAccess)
         {
             _adminId = adminId;
-            _confugurationAccesses = confugurationAccesses;
+            _settingsAccess = settingsAccess;
+            _localizationAccess = localizationAccess;
             _customFilesAccess = customFilesAccess;
         }
 
@@ -39,10 +46,21 @@ namespace IndStoreBot.Handlers
                 using var memoryStream = new MemoryStream();
                 await botClient.GetInfoAndDownloadFileAsync(document.FileId, memoryStream);
                 memoryStream.Position = 0;
-                if (_confugurationAccesses.TryGetValue(fileName, out var access))
+                if (string.Equals(fileName, "settings.json"))
                 {
-                    await access.Write(memoryStream);
-                    await botClient.SendTextMessageAsync(chatId, $"New configuration {fileName} applied");
+                    using var reader = new StreamReader(memoryStream);
+                    var fileText = await reader.ReadToEndAsync();
+                    var settings = JsonConvert.DeserializeObject<SettingsBundle>(fileText);
+                    await _settingsAccess.Write(settings);
+                    await botClient.SendTextMessageAsync(chatId, $"New settings applied");
+                }
+                else if (string.Equals(fileName, "localization.json"))
+                {
+                    using var reader = new StreamReader(memoryStream);
+                    var fileText = await reader.ReadToEndAsync();
+                    var localization = JsonConvert.DeserializeObject<Dictionary<string, string>>(fileText);
+                    await _localizationAccess.Write(localization);
+                    await botClient.SendTextMessageAsync(chatId, $"New localization applied");
                 }
                 else
                 {
@@ -67,10 +85,25 @@ namespace IndStoreBot.Handlers
                     };
                     await botClient.SendTextMessageAsync(chatId, string.Join(Environment.NewLine, helpTextLines));
                 }
-                else if (_confugurationAccesses.TryGetValue(text, out var access))
+                else if (string.Equals(text, "/settings"))
                 {
-                    using var stream = await access.Read();
-                    await botClient.SendDocumentAsync(chatId, InputFile.FromStream(stream, $"{text}.json"));
+                    var settings = await _settingsAccess.Read();
+                    var fileText = JsonConvert.SerializeObject(settings);
+                    using var memoryStream = new MemoryStream();
+                    using var writer = new StreamWriter(memoryStream);
+                    await writer.WriteAllTextAsync(fileText);
+                    memoryStream.Position = 0;
+                    await botClient.SendDocumentAsync(chatId, InputFile.FromStream(memoryStream, $"settings.json"));
+                }
+                else if(string.Equals(text, "/localization"))
+                {
+                    var localization = await _localizationAccess.Read();
+                    var fileText = JsonConvert.SerializeObject(localization);
+                    using var memoryStream = new MemoryStream();
+                    using var writer = new StreamWriter(memoryStream);
+                    await writer.WriteAllTextAsync(fileText);
+                    memoryStream.Position = 0;
+                    await botClient.SendDocumentAsync(chatId, InputFile.FromStream(memoryStream, $"localization.json"));
                 }
                 else
                 {

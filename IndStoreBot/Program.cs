@@ -54,20 +54,20 @@ namespace IndStoreBot
             Log.WriteInfo("Bot started. Press ^C to stop");
 
             var dataFolder = FolderAccess.Current.GetSubFolder("Data");
-            var settingsStreamAccess = dataFolder.GetFileAccess("settings.json");
-            var localizationStreamAccess = dataFolder.GetFileAccess("localization.json");
+            var settingsAccess = dataFolder.GetFileAccess("settings.json")
+                .AsText()
+                .AsObject<SettingsBundle>()
+                .WithCache();
+            var localizationAccess = dataFolder.GetFileAccess("localization.json")
+                .AsText()
+                .AsObject<Dictionary<string, string>>()
+                .WithCache(); ;
             var customFilesAccess = dataFolder.GetSubFolder("CustomFiles");
 
             var updateHandler = new UpdateHandlerComposite(new IUpdateHandler[] 
             {
-                new AdminHandler(adminKey, new Dictionary<string, IReadWriteAccess<Stream>>(FileAccessIdComparer.Intance)
-                {
-                    { "settings", settingsStreamAccess },
-                    { "localization", localizationStreamAccess },
-                }, customFilesAccess),
-                new UserHandler(settingsStreamAccess.AsText().AsObject<SettingsBundle>().WithCache(),
-                    localizationStreamAccess.AsText().AsObject<Dictionary<string, string>>().WithCache(),
-                    customFilesAccess),
+                new AdminHandler(adminKey, settingsAccess, localizationAccess, customFilesAccess),
+                new UserHandler(settingsAccess, localizationAccess, customFilesAccess),
                 new ErrorHandler()
             });
             await bot.ReceiveAsync(updateHandler, null, cts.Token);
