@@ -1,4 +1,4 @@
-﻿namespace IndStoreBot
+﻿namespace IndStoreBot.Extensions
 {
     public static class StreamWriterExtension
     {

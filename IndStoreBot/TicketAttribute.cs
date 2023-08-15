@@ -2,8 +2,11 @@
 {
     public class TicketAttribute
     {
-        public string NameId { get; set; }
-        public string MessageId { get; set; }
-        public IReadOnlyCollection<TicketAttributeOption> Options { get; set; }
+        public string Id { get; set; }
+        public string InvariantName { get; set; }
+        public string InvariantMessage { get; set; }
+        public string File { get; set; }
+        public string NextId { get; set; }
+        public IReadOnlyCollection<TicketAttributeOption> ButtonResponses { get; set; }
     }
 }

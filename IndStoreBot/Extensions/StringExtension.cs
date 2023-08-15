@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace IndStoreBot
+namespace IndStoreBot.Extensions
 {
     public static class StringExtension
     {

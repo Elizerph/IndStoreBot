@@ -1,106 +1,149 @@
 {
 	"TargetChatId": -1001937474458,
+	"FirstAttributeId": "size",
 	"Attributes": [
 		{
-			"NameId": "size",
-			"MessageId": "size_message",
-			"Options": [
+			"Id": "size",
+			"InvariantName": null,
+			"InvariantMessage": "size_message",
+			"File": "size.png",
+			"NextId": "color",
+			"ButtonResponses": [
 				{
-					"LabelId": "size_xs_label",
-					"ValueId": "size_xs_value",
-					"Attribute": null
+					"NextId": null,
+					"InvariantLabel": "size_xs",
+					"InvariantValue": null
 				},
 				{
-					"LabelId": "size_s_label",
-					"ValueId": "size_s_value",
-					"Attribute": null
+					"NextId": null,
+					"InvariantLabel": "size_s",
+					"InvariantValue": null
 				},
 				{
-					"LabelId": "size_m_label",
-					"ValueId": "size_m_value",
-					"Attribute": null
+					"NextId": null,
+					"InvariantLabel": "size_m",
+					"InvariantValue": null
 				},
 				{
-					"LabelId": "size_l_label",
-					"ValueId": "size_l_value",
-					"Attribute": null
+					"NextId": null,
+					"InvariantLabel": "size_l",
+					"InvariantValue": null
 				},
 				{
-					"LabelId": "size_xl_label",
-					"ValueId": "size_xl_value",
-					"Attribute": null
+					"NextId": null,
+					"InvariantLabel": "size_xl",
+					"InvariantValue": null
 				}
 			]
 		},
 		{
-			"NameId": "color",
-			"MessageId": "color_message",
-			"Options": [
+			"Id": "color",
+			"InvariantName": null,
+			"InvariantMessage": "color_message",
+			"File": "color.png",
+			"NextId": "content",
+			"ButtonResponses": [
 				{
-					"LabelId": "color_black_label",
-					"ValueId": "color_black_value",
-					"Attribute": null
+					"NextId": null,
+					"InvariantLabel": "color_black",
+					"InvariantValue": null
 				},
 				{
-					"LabelId": "color_white_label",
-					"ValueId": "color_white_value",
-					"Attribute": null
+					"NextId": null,
+					"InvariantLabel": "color_white",
+					"InvariantValue": null
+				},
+				{
+					"NextId": "size",
+					"InvariantLabel": "back",
+					"InvariantValue": null
 				}
 			]
 		},
 		{
-			"NameId": "content_type",
-			"MessageId": "content_type_message",
-			"Options": [
+			"Id": "content",
+			"InvariantName": null,
+			"InvariantMessage": "content_message",
+			"File": null,
+			"NextId": null,
+			"ButtonResponses": [
 				{
-					"LabelId": "content_type_logo_label",
-					"ValueId": "content_type_logo_value",
-					"Attribute": {
-						"NameId": "content_type_logo",
-						"MessageId": "content_type_logo_message",
-						"Options": null
-					}
+					"NextId": "content_logo",
+					"InvariantLabel": "content_logo",
+					"InvariantValue": null
 				},
 				{
-					"LabelId": "content_type_label_label",
-					"ValueId": "content_type_label_value",
-					"Attribute": {
-						"NameId": "content_type_label",
-						"MessageId": "content_type_label_message",
-						"Options": null
-					}
+					"NextId": "content_label",
+					"InvariantLabel": "content_label",
+					"InvariantValue": null
 				},
 				{
-					"LabelId": "content_type_design_label",
-					"ValueId": "content_type_design_value",
-					"Attribute": {
-						"NameId": "content_type_design",
-						"MessageId": "content_type_design_message",
-						"Options": null
-					}
+					"NextId": "content_design",
+					"InvariantLabel": "content_design",
+					"InvariantValue": null
+				},
+				{
+					"NextId": "color",
+					"InvariantLabel": "back",
+					"InvariantValue": null
 				}
 			]
 		},
 		{
-			"NameId": "content_size",
-			"MessageId": "content_size_message",
-			"Options": [
+			"Id": "content_logo",
+			"InvariantName": null,
+			"InvariantMessage": "content_logo_message",
+			"File": null,
+			"NextId": "content_size",
+			"ButtonResponses": null
+		},
+		{
+			"Id": "content_label",
+			"InvariantName": null,
+			"InvariantMessage": "content_label_message",
+			"File": null,
+			"NextId": "content_size",
+			"ButtonResponses": null
+		},
+		{
+			"Id": "content_size",
+			"InvariantName": null,
+			"InvariantMessage": "content_size_message",
+			"File": null,
+			"NextId": "extra_info",
+			"ButtonResponses": [
 				{
-					"LabelId": "content_size_20_20_label",
-					"ValueId": "content_size_20_20_value",
-					"Attribute": null
+					"NextId": null,
+					"InvariantLabel": "content_size_20_20",
+					"InvariantValue": null
 				},
 				{
-					"LabelId": "content_size_18_20_label",
-					"ValueId": "content_size_18_20_value",
-					"Attribute": null
+					"NextId": null,
+					"InvariantLabel": "content_size_18_20",
+					"InvariantValue": null
+				},
+				{
+					"NextId": "content",
+					"InvariantLabel": "back",
+					"InvariantValue": null
 				}
 			]
 		},
 		{
-			"NameId": "comment",
-			"MessageId": "comment_message",
-			"Options": null
+			"Id": "content_design",
+			"InvariantName": null,
+			"InvariantMessage": "content_design_message",
+			"File": "design.jpg",
+			"NextId": "extra_info",
+			"ButtonResponses": null
+		},
+		{
+			"Id": "extra_info",
+			"InvariantName": null,
+			"InvariantMessage": "extra_info_message",
+			"File": null,
+			"NextId": null,
+			"ButtonResponses": null
 		}
 	]
 }

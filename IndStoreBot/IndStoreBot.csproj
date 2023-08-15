@@ -10,11 +10,23 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Data\CustomFiles\color.png" />
+	  <None Remove="Data\CustomFiles\design.jpg" />
+	  <None Remove="Data\CustomFiles\size.png" />
 	  <None Remove="Data\localization.json" />
 	  <None Remove="settings.json" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Include="Data\CustomFiles\color.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Data\CustomFiles\design.jpg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Data\CustomFiles\size.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Data\localization.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>

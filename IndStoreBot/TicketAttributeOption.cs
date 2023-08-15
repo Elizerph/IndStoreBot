@@ -2,8 +2,8 @@
 {
     public class TicketAttributeOption
     {
-        public string LabelId { get; set; }
-        public string ValueId { get; set; }
-        public TicketAttribute Attribute { get; set; }
+        public string NextId { get; set; }
+        public string InvariantLabel { get; set; }
+        public string InvariantValue { get; set; }
     }
 }
