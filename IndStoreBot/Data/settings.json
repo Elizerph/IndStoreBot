@@ -110,7 +110,7 @@
 			"InvariantName": null,
 			"InvariantMessage": "content_size_message",
 			"File": null,
-			"NextId": "extra_info",
+			"NextId": "promo",
 			"ButtonResponses": [
 				{
 					"NextId": null,
@@ -119,7 +119,12 @@
 				},
 				{
 					"NextId": null,
-					"InvariantLabel": "content_size_18_20",
+					"InvariantLabel": "content_size_20_14",
+					"InvariantValue": null
+				},
+				{
+					"NextId": null,
+					"InvariantLabel": "content_size_14_14",
 					"InvariantValue": null
 				},
 				{
@@ -134,13 +139,13 @@
 			"InvariantName": null,
 			"InvariantMessage": "content_design_message",
 			"File": "design.jpg",
-			"NextId": "extra_info",
+			"NextId": "promo",
 			"ButtonResponses": null
 		},
 		{
-			"Id": "extra_info",
+			"Id": "promo",
 			"InvariantName": null,
-			"InvariantMessage": "extra_info_message",
+			"InvariantMessage": "promo_message",
 			"File": null,
 			"NextId": null,
 			"ButtonResponses": null
