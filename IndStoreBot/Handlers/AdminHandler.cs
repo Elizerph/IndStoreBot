@@ -3,8 +3,6 @@ using IndStoreBot.Extensions;
 
 using Newtonsoft.Json;
 
-using System.Text.Json.Nodes;
-
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -35,45 +33,47 @@ namespace IndStoreBot.Handlers
             if (userId != _adminId)
                 return;
 
-            if (document != null)
+            try
             {
-                var fileName = document.FileName;
-                if (string.IsNullOrEmpty(fileName))
+                if (document != null)
                 {
-                    Log.WriteError("File name is null or empty");
-                    return;
-                }
-                using var memoryStream = new MemoryStream();
-                await botClient.GetInfoAndDownloadFileAsync(document.FileId, memoryStream);
-                memoryStream.Position = 0;
-                if (string.Equals(fileName, "settings.json"))
-                {
-                    using var reader = new StreamReader(memoryStream);
-                    var fileText = await reader.ReadToEndAsync();
-                    var settings = JsonConvert.DeserializeObject<SettingsBundle>(fileText);
-                    await _settingsAccess.Write(settings);
-                    await botClient.SendTextMessageAsync(chatId, $"New settings applied");
-                }
-                else if (string.Equals(fileName, "localization.json"))
-                {
-                    using var reader = new StreamReader(memoryStream);
-                    var fileText = await reader.ReadToEndAsync();
-                    var localization = JsonConvert.DeserializeObject<Dictionary<string, string>>(fileText);
-                    await _localizationAccess.Write(localization);
-                    await botClient.SendTextMessageAsync(chatId, $"New localization applied");
-                }
-                else
-                {
-                    await _customFilesAccess.Write(fileName, memoryStream);
-                    await botClient.SendTextMessageAsync(chatId, $"Custom file {fileName} uploaded");
-                }
-            }
-            else if (!string.IsNullOrEmpty(text) && isCommand)
-            {
-                if (string.Equals(text, "/help"))
-                {
-                    var helpTextLines = new[]
+                    var fileName = document.FileName;
+                    if (string.IsNullOrEmpty(fileName))
                     {
+                        Log.WriteError("File name is null or empty");
+                        return;
+                    }
+                    using var memoryStream = new MemoryStream();
+                    await botClient.GetInfoAndDownloadFileAsync(document.FileId, memoryStream);
+                    memoryStream.Position = 0;
+                    if (string.Equals(fileName, "settings.json"))
+                    {
+                        using var reader = new StreamReader(memoryStream);
+                        var fileText = await reader.ReadToEndAsync();
+                        var settings = JsonConvert.DeserializeObject<SettingsBundle>(fileText);
+                        await _settingsAccess.Write(settings);
+                        await botClient.SendTextMessageAsync(chatId, $"New settings applied");
+                    }
+                    else if (string.Equals(fileName, "localization.json"))
+                    {
+                        using var reader = new StreamReader(memoryStream);
+                        var fileText = await reader.ReadToEndAsync();
+                        var localization = JsonConvert.DeserializeObject<Dictionary<string, string>>(fileText);
+                        await _localizationAccess.Write(localization);
+                        await botClient.SendTextMessageAsync(chatId, $"New localization applied");
+                    }
+                    else
+                    {
+                        await _customFilesAccess.Write(fileName, memoryStream);
+                        await botClient.SendTextMessageAsync(chatId, $"Custom file {fileName} uploaded");
+                    }
+                }
+                else if (!string.IsNullOrEmpty(text) && isCommand)
+                {
+                    if (string.Equals(text, "/help"))
+                    {
+                        var helpTextLines = new[]
+                        {
                         "Admin commands:",
                         "\t/settings: provides settings file",
                         "\t/localization: provides localization file",
@@ -83,32 +83,39 @@ namespace IndStoreBot.Handlers
                         "\t\tlocalization emoji featue: use <emo{id}>, where {id} is emoji unicode code",
                         "\tCustom files: upload via document. Reference through file name in order to attach"
                     };
-                    await botClient.SendTextMessageAsync(chatId, string.Join(Environment.NewLine, helpTextLines));
+                        await botClient.SendTextMessageAsync(chatId, string.Join(Environment.NewLine, helpTextLines));
+                    }
+                    else if (string.Equals(text, "/settings"))
+                    {
+                        var settings = await _settingsAccess.Read();
+                        var fileText = JsonConvert.SerializeObject(settings);
+                        using var memoryStream = new MemoryStream();
+                        using var writer = new StreamWriter(memoryStream);
+                        await writer.WriteAllTextAsync(fileText);
+                        await writer.FlushAsync();
+                        memoryStream.Position = 0;
+                        await botClient.SendDocumentAsync(chatId, InputFile.FromStream(memoryStream, $"settings.json"));
+                    }
+                    else if (string.Equals(text, "/localization"))
+                    {
+                        var localization = await _localizationAccess.Read();
+                        var fileText = JsonConvert.SerializeObject(localization);
+                        using var memoryStream = new MemoryStream();
+                        using var writer = new StreamWriter(memoryStream);
+                        await writer.WriteAllTextAsync(fileText);
+                        await writer.FlushAsync();
+                        memoryStream.Position = 0;
+                        await botClient.SendDocumentAsync(chatId, InputFile.FromStream(memoryStream, $"localization.json"));
+                    }
+                    else
+                    {
+                        Log.WriteInfo($"Admin command {text} ignored");
+                    }
                 }
-                else if (string.Equals(text, "/settings"))
-                {
-                    var settings = await _settingsAccess.Read();
-                    var fileText = JsonConvert.SerializeObject(settings);
-                    using var memoryStream = new MemoryStream();
-                    using var writer = new StreamWriter(memoryStream);
-                    await writer.WriteAllTextAsync(fileText);
-                    memoryStream.Position = 0;
-                    await botClient.SendDocumentAsync(chatId, InputFile.FromStream(memoryStream, $"settings.json"));
-                }
-                else if(string.Equals(text, "/localization"))
-                {
-                    var localization = await _localizationAccess.Read();
-                    var fileText = JsonConvert.SerializeObject(localization);
-                    using var memoryStream = new MemoryStream();
-                    using var writer = new StreamWriter(memoryStream);
-                    await writer.WriteAllTextAsync(fileText);
-                    memoryStream.Position = 0;
-                    await botClient.SendDocumentAsync(chatId, InputFile.FromStream(memoryStream, $"localization.json"));
-                }
-                else
-                {
-                    Log.WriteInfo($"Admin command {text} ignored");
-                }
+            }
+            catch (Exception e)
+            {
+                Log.WriteError("Error", e);
             }
         }
     }
